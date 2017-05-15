@@ -97,7 +97,7 @@ public class EncounterSession {
             return 0;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(String.format("Error while trying to login to %s", loginUrl));
             return  -1;
         }
 
@@ -118,7 +118,7 @@ public class EncounterSession {
             return eep.isLastCodeCorrect() ? 1 : 0;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(String.format("Error while sending request to %s with code %s at level %s", sessionInfo.getPLAY_URL(), code, levelInfo.getCurrentLevelNumber()));
             return -1;
         }
     }
@@ -157,7 +157,7 @@ public class EncounterSession {
             updateLastEventTime(eep);
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(String.format("Error while sending request to refresh engine page %s ", sessionInfo.getPLAY_URL()));
         }
 
     }
@@ -177,7 +177,7 @@ public class EncounterSession {
             this.engineWatcher.kill();
 
         } catch (IOException e){
-            e.printStackTrace();
+            log.error(String.format("Error while sending request to logout %s", sessionInfo.getENGINE_URL() + LOGOUT_PART));
         }
     }
 
