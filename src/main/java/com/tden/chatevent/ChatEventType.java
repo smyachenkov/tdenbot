@@ -13,6 +13,7 @@ public enum ChatEventType{
         PHOTO,
         DOCUMENT,
         AUDIO,
+        VOICE,
         UNDEFINED
     }
 

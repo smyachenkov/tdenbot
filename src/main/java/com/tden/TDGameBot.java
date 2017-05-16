@@ -1,5 +1,6 @@
 package com.tden;
 
+import com.google.cloud.speech.spi.v1.SpeechClient;
 import com.tden.chatevent.ChatEvent;
 import com.tden.chatevent.ChatEventFactory;
 import com.tden.command.CommandPrivacy;
@@ -18,6 +19,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
+import java.io.IOException;
 import java.util.Optional;
 
 
@@ -32,6 +34,8 @@ public class TDGameBot extends TelegramLongPollingBot {
     EncounterSession encounterSession;
     @Getter
     CommandPrivacy commandPrivacy;
+    @Getter
+    SpeechClient speechClient;
 
     private long delay;
 
@@ -44,10 +48,11 @@ public class TDGameBot extends TelegramLongPollingBot {
         return ConfigurationHelper.getProperty("bot_name");
     }
 
-    public TDGameBot() {
+    public TDGameBot() throws IOException{
         encounterSession = new EncounterSession();
         commandPrivacy = new CommandPrivacy();
         delay =  Long.parseLong(ConfigurationHelper.getProperty("message_delay", "300000"));;
+        speechClient = SpeechClient.create();
     }
 
     @Override
@@ -85,6 +90,7 @@ public class TDGameBot extends TelegramLongPollingBot {
 
     public static void main(String[] args) {
 
+        try {
         // we need to create it with an own log4j appender, because default is messing with all logs
         Logger logger = Logger.getRootLogger();
         Appender appender = logger.getAppender("telegrambots");
@@ -97,12 +103,13 @@ public class TDGameBot extends TelegramLongPollingBot {
 
         TDGameBot tdGameBot = new TDGameBot();
 
-        try {
-            botsApi.registerBot(tdGameBot);
-        } catch (TelegramApiException e) {
-            log.error(e.getMessage());
-        }
+        botsApi.registerBot(tdGameBot);
 
+        } catch (TelegramApiException e) {
+            log.error(String.format("Error registering telegram bot: %s", e.getMessage()));
+        } catch (IOException e) {
+            log.error(String.format("Error creating bot client: %s", e.getMessage()));
+        }
     }
 
     public void onClosing() { }

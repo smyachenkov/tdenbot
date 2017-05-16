@@ -22,20 +22,19 @@ public class ChatEventFactory {
 
         ChatEvent chatEvent = null;
 
-
         if(message.hasLocation()){
             chatEvent = new LocationEvent(bot, message);
-
-        } else if(message.hasText()){
+        } else if(message.hasText()) {
             String t = message.getText();
-
-            if(isCommand(t, bot.getBotUsername())) {
-                chatEvent = new CommandEvent(bot,message);
-            }else if(isLocation(t)) {
-                chatEvent = new CoordinatesEvent(bot,message);
-            }else if(isCode(t)) {
+            if (isCommand(t, bot.getBotUsername())) {
+                chatEvent = new CommandEvent(bot, message);
+            } else if (isLocation(t)) {
+                chatEvent = new CoordinatesEvent(bot, message);
+            } else if (isCode(t)) {
                 chatEvent = new EnCodeEvent(bot, message);
             }
+        } else if (message.getVoice() != null) {
+            chatEvent = new VoiceEvent(bot, message);
         }
 
         if(chatEvent == null)
