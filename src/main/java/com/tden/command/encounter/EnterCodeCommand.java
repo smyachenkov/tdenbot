@@ -18,10 +18,12 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 @Slf4j
 public class EnterCodeCommand extends BasicCommandImpl {
 
-    public EnterCodeCommand(Message message,
-                            TDGameBot bot,
-                            String argString) {
+    public EnterCodeCommand(Message message, TDGameBot bot, String argString) {
         super(bot, message, CommandModel.CommandType.ENTERCODE, argString);
+    }
+
+    public EnterCodeCommand(Message message, TDGameBot bot, String argString, boolean doReply) {
+        super(bot, message, CommandModel.CommandType.ENTERCODE, argString, doReply);
     }
 
     @Override
@@ -51,7 +53,8 @@ public class EnterCodeCommand extends BasicCommandImpl {
 
                 reply = new SendMessage();
                 reply.setChatId(message.getChatId());
-                reply.setReplyToMessageId(message.getMessageId());
+                if(isDoReply())
+                    reply.setReplyToMessageId(message.getMessageId());
                 reply.enableMarkdown(true);
                 reply.setText(respText);
                 bot.sendMessage(reply);
