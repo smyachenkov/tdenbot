@@ -17,12 +17,9 @@ import org.telegram.telegrambots.exceptions.TelegramApiException;
 @Slf4j
 public class LevelStatusCommand extends BasicCommandImpl {
 
-    public LevelStatusCommand(Message message,
-                            TDGameBot bot,
-                            String argString) {
+    public LevelStatusCommand(Message message,TDGameBot bot, String argString) {
         super(bot, message, CommandModel.CommandType.LEVELSTATUS, argString);
     }
-
 
     @Override
     public void processCommand() {

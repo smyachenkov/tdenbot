@@ -20,17 +20,18 @@ public abstract class BasicCommandImpl implements BasicCommand {
     // all command have different reply settings based on its availability and security settings
     private boolean doReply = false;
 
-    public BasicCommandImpl(TDGameBot bot,
-                            Message message,
-                            CommandModel.CommandType type,
-                            String argString) {
+    public BasicCommandImpl(TDGameBot bot, Message message, CommandModel.CommandType type, String argString) {
         this.type = type;
         this.argString = argString;
         this.bot = bot;
         this.message = message;
+        this.doReply = true;
+        this.securityLevel = type.getSecLvl();  // security level is defined in command model
+    }
 
-        // security level is defined in command model
-        this.securityLevel = type.getSecLvl();
+    public BasicCommandImpl(TDGameBot bot, Message message, CommandModel.CommandType type, String argString, boolean doReply) {
+        this(bot, message, type, argString);
+        this.doReply = doReply;
     }
 
     public CommandModel.SecurityLevel getSecurityLevel(){

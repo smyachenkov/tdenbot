@@ -32,6 +32,8 @@ import java.text.MessageFormat;
 @Slf4j
 public class VoiceEvent extends ChatEvent {
 
+    private static final int MAX_CODE_LENGTH = 20;
+
     public VoiceEvent(TDGameBot bot, Message message) {
         super(bot, ChatEventType.VOICE, message, true);
     }
@@ -50,16 +52,20 @@ public class VoiceEvent extends ChatEvent {
             if(voice.getDuration() > 120){
                 reply.setText(Responses.VOICE_TOO_LONG.toString());
                 reply.enableMarkdown(true);
-                this.bot.sendMessage(reply);    //without reply on purpose, too much notifications for one message
+                reply.setReplyToMessageId(msg.getMessageId());
+                this.bot.sendMessage(reply);
             } else {
                 String recognizedMessage = getTextFromVoice(message.getVoice());
                 reply.setText(recognizedMessage);
-                this.bot.sendMessage(reply);    //without reply on purpose, too much notifications for one message
+                reply.setReplyToMessageId(msg.getMessageId());
+                this.bot.sendMessage(reply);
 
                 //if we recognized text and the game is active - enter it
                 EncounterSession s = bot.getEncounterSession();
-                if (s.getSessionInfo().getActivityStatus() == ActivityStatus.ACTIVE) {
-                    EnterCodeCommand comm = new EnterCodeCommand(message, bot, recognizedMessage);
+                if (s.getSessionInfo().getActivityStatus() == ActivityStatus.ACTIVE &&
+                        recognizedMessage.length() <= MAX_CODE_LENGTH) {
+                    //without reply on purpose, too much notifications for one message
+                    EnterCodeCommand comm = new EnterCodeCommand(message, bot, recognizedMessage, false);
                     comm.processCommand();
                 }
             }
