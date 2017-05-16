@@ -45,7 +45,11 @@ public enum Responses {
 
     GAME_RESUMED("`Game is resumed`"),
 
-    COMMAND_NOT_FOUND("`Command is not found`");
+    COMMAND_NOT_FOUND("`Command is not found`"),
+
+    VOICE_TOO_LONG("_Voice message is too long_"),
+
+    ERROR_IN_VOICE_REC("Сan't recognize!");
 
     String value;
 

@@ -53,7 +53,7 @@ public class EncounterSession {
 
         try {
 
-            log.info("Trying to log in to" + loginUrl);
+            log.info("Trying to log in to " + loginUrl);
 
             Connection.Response resLogin = Jsoup.connect(loginUrl)
                     .data("Login", login, "Password", password)

@@ -6,8 +6,7 @@
 
     <groupId>com.tdenbot</groupId>
     <artifactId>tdenbot</artifactId>
-    <version>0.7</version>
-
+    <version>0.8</version>
 
     <build>
         <plugins>
@@ -67,6 +66,11 @@
             <artifactId>lombok</artifactId>
             <version>1.16.12</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-speech</artifactId>
+            <version>0.17.1-alpha</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
