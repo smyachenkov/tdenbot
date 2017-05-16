@@ -1,7 +1,6 @@
 package com.tden.encounterengine;
 
 import com.tden.utilities.ConfigurationHelper;
-import com.tden.utilities.StringUtils;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
@@ -46,8 +45,8 @@ public class EncounterSession {
         String login = ConfigurationHelper.getProperty("login");
             String password = ConfigurationHelper.getProperty("password");
 
-        String loginUrl = url.substring(0, StringUtils.nthIndexOf(url, "/", 3)) + LOGIN_PART;
-        String gameUrl =  url.substring(0, StringUtils.nthIndexOf(url, "/", 3))
+        String loginUrl = url.substring(0, nthIndexOf(url, "/", 3)) + LOGIN_PART;
+        String gameUrl =  url.substring(0, nthIndexOf(url, "/", 3))
                                             + ENGINE_PART
                                             + url.substring(url.lastIndexOf('=') + 1, url.length());
 
@@ -62,7 +61,7 @@ public class EncounterSession {
 
             this.sessionInfo.setCookies(resLogin.cookies());
             this.sessionInfo.setPLAY_URL(gameUrl);
-            this.sessionInfo.setENGINE_URL(url.substring(0, StringUtils.nthIndexOf(url, "/", 3)));
+            this.sessionInfo.setENGINE_URL(url.substring(0, nthIndexOf(url, "/", 3)));
             this.sessionInfo.setLastEventTime(System.currentTimeMillis()/1000L);
 
             Document resEngine = Jsoup.connect(gameUrl)
@@ -179,6 +178,15 @@ public class EncounterSession {
         } catch (IOException e){
             log.error(String.format("Error while sending request to logout %s", sessionInfo.getENGINE_URL() + LOGOUT_PART));
         }
+    }
+
+    private int nthIndexOf(String string, String token, int index) {
+        int j = 0;
+        for (int i = 0; i < index; i++) {
+            j = string.indexOf(token, j + 1);
+            if (j == -1) break;
+        }
+        return j;
     }
 
 }
