@@ -25,6 +25,7 @@ import org.telegram.telegrambots.api.objects.Voice;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.text.MessageFormat;
+import java.util.stream.Stream;
 
 /**
  * Created by Stanislav Myachenkov on 16.05.2017.
@@ -32,6 +33,7 @@ import java.text.MessageFormat;
 @Slf4j
 public class VoiceEvent extends ChatEvent {
 
+    private static final int MIN_CODE_LENGTH = 4;
     private static final int MAX_CODE_LENGTH = 20;
 
     public VoiceEvent(TDGameBot bot, Message message) {
@@ -49,26 +51,41 @@ public class VoiceEvent extends ChatEvent {
 
             reply.setChatId(message.getChatId());
 
-            if(voice.getDuration() > 120){
+            if (voice.getDuration() > 120) {
                 reply.setText(Responses.VOICE_TOO_LONG.toString());
                 reply.enableMarkdown(true);
                 reply.setReplyToMessageId(msg.getMessageId());
                 this.bot.sendMessage(reply);
             } else {
-                String recognizedMessage = getTextFromVoice(message.getVoice());
+                String recognizedMessage = getTextFromVoice(message.getVoice()).toLowerCase();
                 reply.setText(recognizedMessage);
                 reply.setReplyToMessageId(msg.getMessageId());
                 this.bot.sendMessage(reply);
 
-                //if we recognized text and the game is active - enter it
-                EncounterSession s = bot.getEncounterSession();
-                if (s.getSessionInfo().getActivityStatus() == ActivityStatus.ACTIVE &&
-                        recognizedMessage.length() <= MAX_CODE_LENGTH) {
-                    //without reply on purpose, too much notifications for one message
-                    EnterCodeCommand comm = new EnterCodeCommand(message, bot, recognizedMessage, false);
-                    comm.processCommand();
+                if (!recognizedMessage.equals(Responses.ERROR_IN_VOICE_REC.toString())) {
+                    //if we recognized text and the game is active - enter it
+
+                    if (bot.getEncounterSession().getSessionInfo().getActivityStatus() == ActivityStatus.ACTIVE) {
+
+                        String code = recognizedMessage.toLowerCase()
+                                                        .replaceAll("\\s+", "")
+                                                        .replaceAll("пробел", " ");
+
+                        if ((code.length() >= MIN_CODE_LENGTH && code.length() <= MAX_CODE_LENGTH) || (Stream.of("вот", "кот", "код").anyMatch(recognizedMessage::startsWith))) {
+
+                            if ((Stream.of("вот", "кот", "код").anyMatch(recognizedMessage::startsWith)) && code.length() >= MIN_CODE_LENGTH) {
+                                code = code.substring(3, code.length());
+                            }
+
+                            //without reply on purpose, too much notifications for one message
+                            EnterCodeCommand comm = new EnterCodeCommand(message, bot, code, false);
+                            comm.processCommand();
+                        }
+                    }
                 }
             }
+
+
 
         }catch (TelegramApiException e){
             log.error(String.format("Error sending response to voice message [ %s ] from user [ %s ]", message, message.getFrom()));
