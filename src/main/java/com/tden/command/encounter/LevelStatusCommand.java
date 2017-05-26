@@ -3,6 +3,7 @@ package com.tden.command.encounter;
 import com.tden.TDGameBot;
 import com.tden.command.BasicCommandImpl;
 import com.tden.command.CommandModel;
+import com.tden.encounterengine.ActivityStatus;
 import com.tden.encounterengine.EncounterSession;
 import com.tden.encounterengine.LevelSector;
 import com.tden.utilities.Responses;
@@ -27,37 +28,40 @@ public class LevelStatusCommand extends BasicCommandImpl {
 
         SendMessage reply;
 
-        try {
-            reply = new SendMessage();
-            reply.setChatId(message.getChatId());
-            reply.setReplyToMessageId(message.getMessageId());
-            reply.enableMarkdown(true);
+        // for both paused and active status
+        if (s.getSessionInfo().getActivityStatus() != ActivityStatus.NOTACTIVE) {
 
-            StringBuilder sb = new StringBuilder();
-            for(LevelSector ls : s.getLevelInfo().getSectors()){
-                sb.append(ls.getNumber())
-                    .append(" ")
-                    .append(ls.getName());
+            try {
+                reply = new SendMessage();
+                reply.setChatId(message.getChatId());
+                reply.setReplyToMessageId(message.getMessageId());
+                reply.enableMarkdown(true);
 
-                if(ls.getAnswer() != null && !ls.getAnswer().isEmpty()){
-                    sb.append("_").append(ls.getAnswer()).append("_");
-                } else {
-                    sb.append(" — ");
+                StringBuilder sb = new StringBuilder();
+                for (LevelSector ls : s.getLevelInfo().getSectors()) {
+                    sb.append(ls.getNumber())
+                            .append(" ")
+                            .append(ls.getName());
+
+                    if (ls.getAnswer() != null && !ls.getAnswer().isEmpty()) {
+                        sb.append("_").append(ls.getAnswer()).append("_");
+                    } else {
+                        sb.append(" — ");
+                    }
+
+                    sb.append("\n");
+
                 }
 
-                sb.append("\n");
+                reply.setText(String.format(Responses.LEVEL_STATUS.toString(),
+                        s.getLevelInfo().getCurrentLevelName(),
+                        sb.toString()
+                ));
 
+                bot.sendMessage(reply);
+            } catch (TelegramApiException e) {
+                log.error(String.format("Error processing command [ %s ] in message [ %s ] from user [ %s ]", getCommandName(), message, message.getFrom()));
             }
-
-            reply.setText(String.format(Responses.LEVEL_STATUS.toString(),
-                    s.getLevelInfo().getCurrentLevelName(),
-                    sb.toString()
-            ));
-
-            bot.sendMessage(reply);
-        }
-        catch(TelegramApiException e){
-            log.error(String.format("Error processing command [ %s ] in message [ %s ] from user [ %s ]", getCommandName(), message, message.getFrom()));
         }
     }
 
