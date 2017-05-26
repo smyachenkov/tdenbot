@@ -37,6 +37,12 @@ public class TDGameBot extends TelegramLongPollingBot {
     @Getter
     SpeechClient speechClient;
 
+    private static final String MESSAGE_GROUP_LOG =
+            "[Chat] %s" + " [ChatId] %s" + " [User] %s" + " [Message] %s";
+
+    private static final String MESSAGE_PRIVATE_LOG =
+            "[User] %s" + " [Message] %s";
+
     private long delay;
 
     @Override
@@ -64,21 +70,24 @@ public class TDGameBot extends TelegramLongPollingBot {
 
             message = update.getMessage();
 
-            Chat chatType = message.getChat();               // private or group chat
-            String chatTitle = "";
+            Chat chat = message.getChat();
+            String chatTitle;
+            String user;
 
-            if(chatType.isGroupChat() || chatType.isSuperGroupChat() || chatType.isChannelChat()){
-                chatTitle =  chatType.getTitle();
-            } else if (chatType.isUserChat() ){
-                Optional<String> firstName = Optional.of(chatType.getFirstName());
-                Optional<String> lastName = Optional.ofNullable(chatType.getLastName());
-                chatTitle = firstName.get() + " " + (lastName.isPresent() ? lastName.get() : "");
+            Optional<String> firstName = Optional.of(message.getFrom().getFirstName());
+            Optional<String> lastName = Optional.ofNullable(message.getFrom().getLastName());
+            Optional<String> userName = Optional.ofNullable(message.getFrom().getUserName());
+
+            // first name is mandatory, last- and user- are optional
+            user = firstName.get() + " " + (lastName.isPresent() ? lastName.get() : "") + " " + (userName.isPresent() ? "@" + userName.get() : "");
+
+            // private or group chat
+            if (chat.isUserChat()){
+                log.info(String.format(MESSAGE_PRIVATE_LOG, user, message.getText()));
+            } else {
+                chatTitle =  chat.getTitle();
+                log.info(String.format(MESSAGE_GROUP_LOG, chatTitle, chat.getId(), user, message.getText()));
             }
-
-            log.info("[Chat] " + chatTitle +
-                    " [ChatId] " + chatType.getId() +
-                    " [User] @" + message.getFrom().getUserName() +
-                    " [Message] " + message.getText());
 
             // only messages from last N minutes
             if( System.currentTimeMillis()/1000L - message.getDate() < delay){
