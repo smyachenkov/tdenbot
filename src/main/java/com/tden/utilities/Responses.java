@@ -21,7 +21,10 @@ public enum Responses {
 
     NEXT_LEVEL(Emoji.NORTH_EAST_ARROW + " Переход на новый уровень " + Emoji.NORTH_EAST_ARROW),
 
-    BOT_STATUS("*Session stats*\n" +
+    BOT_STATUS(
+            "\tChat id: %s\n" +
+            "\n" +
+            "*Session stats*\n" +
             "\tBot status: %s\n" +
             "\tLast event time: %s\n" +
             "\tGame url: %s\n" +

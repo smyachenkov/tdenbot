@@ -47,6 +47,8 @@ public class BotStatusCommand extends BasicCommandImpl {
                 String formattedDate = sdf.format(date);
 
                 reply.setText(String.format(Responses.BOT_STATUS.toString(),
+                        //CHAT
+                        message.getChatId(),
                         //SESSION
                         s.getSessionInfo().getActivityStatus(),
                         formattedDate,
