@@ -31,6 +31,8 @@ public class LevelStatusCommand extends BasicCommandImpl {
         // for both paused and active status
         if (s.getSessionInfo().getActivityStatus() != ActivityStatus.NOTACTIVE) {
 
+            s.updateLastEventTime();
+
             try {
                 reply = new SendMessage();
                 reply.setChatId(message.getChatId());
