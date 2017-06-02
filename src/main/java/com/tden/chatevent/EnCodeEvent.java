@@ -23,41 +23,27 @@ public class EnCodeEvent extends ChatEvent {
 
     @Override
     public int processEvent() {
-        try {
-            EncounterSession s = bot.getEncounterSession();
-            if (s.getSessionInfo().getActivityStatus() == ActivityStatus.ACTIVE) {
 
-                String argString = new String();       // we need only code from arg list
+        EncounterSession s = bot.getEncounterSession();
+        if (s.getSessionInfo().getActivityStatus() == ActivityStatus.ACTIVE) {
 
-                if (message.getText().startsWith(".")) {
+            String argString = new String();       // we need only code from arg list
 
-                    String foo = message.getText()
-                            .substring(1, message.getText().length())
-                            .trim();
-                    argString = foo.split("\\s+")[0];
+            if (message.getText().startsWith(".")) {
+
+                String foo = message.getText()
+                        .substring(1, message.getText().length())
+                        .trim();
+                argString = foo.split("\\s+")[0];
 
 
-                } else if (message.getText().startsWith("!")) {
-                    argString = message.getText().substring(1, message.getText().length());
-                }
-
-                EnterCodeCommand comm = new EnterCodeCommand(message, bot, argString);
-                comm.processCommand();
-
-            } else {
-                SendMessage reply;
-                reply = new SendMessage();
-                reply.setChatId(message.getChatId());
-                reply.setReplyToMessageId(message.getMessageId());
-                reply.enableMarkdown(true);
-                reply.setText(Responses.GAME_NOT_ACTIVE.toString());
-                bot.sendMessage(reply);
+            } else if (message.getText().startsWith("!")) {
+                argString = message.getText().substring(1, message.getText().length());
             }
-        } catch (TelegramApiException e){
-            log.error(String.format("Error processing message [%s] from user [%s]", message, message.getFrom()));
-            return 1;
-        }
 
+            EnterCodeCommand comm = new EnterCodeCommand(message, bot, argString);
+            comm.processCommand();
+        }
         return 0;
     }
 }
