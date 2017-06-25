@@ -117,7 +117,7 @@ public class EncounterSession {
             return eep.isLastCodeCorrect() ? 1 : 0;
 
         } catch (IOException e) {
-            log.error(String.format("Error while sending request to %s with code %s at level %s", sessionInfo.getPLAY_URL(), code, levelInfo.getCurrentLevelNumber()));
+            log.error(String.format("Error while sending request to %s with code %s at level %s. %s", sessionInfo.getPLAY_URL(), code, levelInfo.getCurrentLevelNumber()), e.getMessage());
             return -1;
         }
     }
