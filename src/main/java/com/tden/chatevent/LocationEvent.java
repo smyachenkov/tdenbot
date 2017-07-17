@@ -30,7 +30,7 @@ public class LocationEvent extends ChatEvent {
 
             reply.setChatId(msg.getChatId());
             reply.setReplyToMessageId(msg.getMessageId());
-            reply.setText(longitude.toString() + ", " + latitude.toString());
+            reply.setText(latitude.toString() + ", " + longitude.toString());
             this.getBot().sendMessage(reply);
             return 0;
 
